@@ -4,7 +4,13 @@ import click
 @click.command()
 @click.argument('filename')
 def count(filename):
-	c = Counter()
-	for line in data.splitlines():
-	    c.update(line.split())
-	print(c)
+	count = Counter()
+	with open(filename, 'r') as f:
+		for line in f:
+			count.update(line.split())
+	import pdb;pdb.set_trace()
+	print(count)
+
+if __name__ == "__main__":
+
+	count()
