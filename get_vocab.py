@@ -2,14 +2,16 @@ from collections import Counter
 import click
 
 @click.command()
-@click.argument('filename')
-def count(filename):
+@click.argument('input_file')
+@click.argument('output_file')
+def count(input_file, output_file):
 	count = Counter()
-	with open(filename, 'r') as f:
+	with open(input_file, 'r') as f:
 		for line in f:
 			count.update(line.split())
-	import pdb;pdb.set_trace()
-	print(count)
+	with open(output_file, 'a') as o:
+		for key in count.keys():
+			o.write(str(count[key]) + " " + key + "\n")
 
 if __name__ == "__main__":
 
