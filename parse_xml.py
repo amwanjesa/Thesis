@@ -48,7 +48,7 @@ def main(title_file, wiki_file, vocab_file):
 		lines = i.readlines()
 
 	with open(wiki_file, 'a',  encoding='utf-8') as outfile:
-		while os.path.getsize(wiki_file) < 400000000:
+		while os.path.getsize(wiki_file) < 4000000000:
 			index = randint(0, len(lines) - 1)
 			if index in seen:
 				continue
