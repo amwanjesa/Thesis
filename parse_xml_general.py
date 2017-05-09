@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup as bs
 
 count = Counter()
 warnings.filterwarnings('ignore')
-supers = ['computers', 'software_development', 'software_engineering', 'algorithms', 'computer_programmers', 'programming_languages', 'debugging', 'computer_libraries', 'software', 'Areas_of_computer_science', 'computer_programming_tools', 'computer_programming_stubs', 'software_design_patterns', 'computer_programming', 'classes_of_computers', 'computing_stubs', 'information_technology', 'artificial_intelligence', 'artificial_intelligence_applications', 'robotics'] #'culture', 'outer_space', 'society', 'nature', 'science']
+supers = ['computers', 'software_development', 'software_engineering', 'algorithms', 'computer_programmers', 'programming_languages', 'debugging', 'computer_libraries', 'software', 'Areas_of_computer_science', 'computer_programming_tools', 'computer_programming_stubs', 'software_design_patterns', 'computer_programming', 'classes_of_computers', 'computing_stubs', 'information_technology', 'artificial_intelligence', 'artificial_intelligence_applications', 'robotics', 'computer_science_stubs', 'analysis_of_algorithms', 'computer_scientists', 'portable_software', 'mobile_software'] #'culture', 'outer_space', 'society', 'nature', 'science']
 # get the subcategories of the top wikipedia category "Alles"
 
 def parse(filename, sum_cat):
@@ -42,7 +42,7 @@ def parse(filename, sum_cat):
 					page_id = soup.find('page').attrs['pageid']
 				except Exception as e:
 					continue
-				count.update(wtk(text))
+				count.update(wtk(text.lower()))
 				if supers.index(sum_cat) > 2:
 					outfile.write(page_id + "    GENERAL    " + text + "    " + page_url + "\n")
 				else:
