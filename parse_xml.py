@@ -24,7 +24,7 @@ def parse(title):
 	page_url = "https://en.wikipedia.org/w/api.php?format=xml&action=query&prop=extracts&titles=computer_programming&redirects=true"
 	page_url = page_url.replace('computer_programming', title).replace(" ", "_")
 	page = requests.get(page_url)
-	
+
 	text = page.text.replace('&lt;', '<').replace('&gt;', '>')
 	soup = bs(text, 'html.parser')
 	text = soup.get_text().replace('\n', " ")
@@ -32,7 +32,7 @@ def parse(title):
 		page_id = soup.find('page').attrs['pageid']
 	except Exception as e:
 		return
-	
+
 	count.update(wtk(text))
 	return page_id + "    GENERAL    " + text + "    " + page_url + "\n"
 
@@ -68,4 +68,3 @@ def main(title_file, wiki_file, vocab_file):
 if __name__ == "__main__":
 
 	main()
-
