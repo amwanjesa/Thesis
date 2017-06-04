@@ -16,7 +16,7 @@ def compute_distances(vector_file, dist_file):
     with open(vector_file, 'r') as ifile:
         count = 0
         lines = ifile.readlines()[1:]
-        interval = len(lines) / 3
+        interval = int(len(lines) / 3)
         main_lines = lines[:interval]
         for i, line in tqdm(enumerate(main_lines)):
             main = line.split()

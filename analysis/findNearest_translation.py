@@ -7,7 +7,6 @@ import sys,math,operator
 
 import numpy as np
 from numpy import linalg as LA
-import json
 
 
 def get_embeddings(word, embeddings):
@@ -18,7 +17,7 @@ def get_embeddings(word, embeddings):
 	return word_emb
 
 
-def find(word, data, name, output_file):
+def find(word, data, name):
 	print ("Finding: %s in %s" % (word, name))
 	scores={}
 	if word not in data:
@@ -35,17 +34,12 @@ def find(word, data, name, output_file):
 
 	sorted_x = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-	with open(output_file, 'a') as out:
-		results = {word + '_' + name: sorted_x[:20]}
-		json.dump(results, out)
-		out.write('\n')
-
 	for i in range(10):
 		(k,v) = sorted_x[i]
 		print ("%s\t%.3f" % (k,v))
 	print ("")
 
-def find_translation(word, vector, data, name, label, output_file):
+def find_translation(word, vector, data, name, label):
 	print ("Finding: %s from %s in %s" % (word, label, name))
 	scores={}
 	if word not in data:
@@ -63,35 +57,28 @@ def find_translation(word, vector, data, name, label, output_file):
 
 	sorted_x = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-	with open(output_file, 'a') as out:
-		results = {word + '_' + label + '_' + name: sorted_x[:20]}
-		json.dump(results, out)
-		out.write('\n')
-
 	for i in range(10):
 		(k,v) = sorted_x[i]
 		print ("%s\t%.3f" % (k,v))
 	print ("")
 
 # find closest terms for all states
-def bigfind(word, embeddings, output_file):
+def bigfind(word, embeddings):
 	for n in sorted(embeddings):
+		print ('***************')
 		print('Finding neigbors inside own community')
 
 		# Neighbors inside community
-		find(word, embeddings[n], n, output_file)
+		find(word, embeddings[n], n)
 
+		print ('---------------')
 		print('Finding translation in different community')
 		# Take the complement of the communty chosed: so if n is GENERAL, takes the complement -> ['PROG']
 		complement = list(set(sorted(embeddings.keys())) - set([n]))
 
-
-		try:
-			# Provide the vectgor for the complement; so for dog this is the vecto dog in PROG communty if n is GENERAL
-			find_translation(word, embeddings[complement[0]][word], embeddings[n], n, complement[0], output_file)
-			print('\n\n')
-		except KeyError:
-			print ("%s not in vocab" % word)
+		# Provide the vectgor for the complement; so for dog this is the vecto dog in PROG communty if n is GENERAL
+		find_translation(word, embeddings[complement[0]][word], embeddings[n], n, complement[0])
+		print('\n\n')
 
 # normalize vectors for faster cosine similarity calculation
 def normalize(embeddings):
@@ -119,7 +106,7 @@ def getFacets(filename):
 
 	return facets.keys()
 
-def process(filename, output_file):
+def process(filename):
 	file=open(filename)
 
 	embeddings={}
@@ -176,9 +163,9 @@ def process(filename, output_file):
 	while line:
 		word=line.rstrip()
 		print (word)
-		bigfind(word, embeddings, output_file)
+		bigfind(word, embeddings)
 		print ("query (ctrl-c to quit): ")
 		line = sys.stdin.readline()
 
 if __name__ == "__main__":
-	process(sys.argv[1], sys.argv[2])
+	process(sys.argv[1])
