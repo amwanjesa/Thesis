@@ -7,7 +7,11 @@ import sys,math,operator
 
 import numpy as np
 from numpy import linalg as LA
+import json
 
+rf = {}
+weights = False
+threshold = 0
 
 def get_embeddings(word, embeddings):
 	word_emb = dict()
@@ -22,19 +26,25 @@ def find(word, data, name):
 	scores={}
 	if word not in data:
 		print ("%s not in vocab" % word)
-		return
-
-	a=data[word]
+		pass
+	try:
+		a=data[word]
+	except:
+		pass
+		
 	for word2 in data:
 		try:
-			score=np.inner(a, data[word2])
+			vector = data[word2]
+			if np.all(vector == 0):
+				continue
+			score=np.inner(a, vector)
 			scores[word2]=score
 		except:
 			pass
 
 	sorted_x = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-	for i in range(10):
+	for i in range(25):
 		(k,v) = sorted_x[i]
 		print ("%s\t%.3f" % (k,v))
 	print ("")
@@ -44,20 +54,26 @@ def find_translation(word, vector, data, name, label):
 	scores={}
 	if word not in data:
 		print ("%s not in vocab" % word)
-		return
+		pass
 	
 	# Vector of query word is now from the complement community of name and data. 
 	a=vector
 	for word2 in data:
 		try:
-			score=np.inner(a, data[word2])
-			scores[word2]=score
+			vector = data[word2]
+			if np.all(vector == 0):
+				continue
+			score=np.inner(a, vector)
+			if weights and rf[word2] < threshold:
+				scores[word2]=score * rf[word2]
+			else:
+				scores[word2]=score
 		except:
 			pass
 
 	sorted_x = sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-	for i in range(10):
+	for i in range(25):
 		(k,v) = sorted_x[i]
 		print ("%s\t%.3f" % (k,v))
 	print ("")
@@ -79,6 +95,7 @@ def bigfind(word, embeddings):
 		# Provide the vectgor for the complement; so for dog this is the vecto dog in PROG communty if n is GENERAL
 		find_translation(word, embeddings[complement[0]][word], embeddings[n], n, complement[0])
 		print('\n\n')
+
 
 # normalize vectors for faster cosine similarity calculation
 def normalize(embeddings):
@@ -168,4 +185,13 @@ def process(filename):
 		line = sys.stdin.readline()
 
 if __name__ == "__main__":
+	if sys.argv[2] == 'weights':
+		weights = True
+		with open(sys.argv[3], 'r') as i:
+			rf = json.load(i)
+			vals = list(rf.values())
+			tmp = np.array(vals, dtype=float)
+			threshold = np.mean(tmp) + np.std(tmp) * 0.25 * 0.125
+	else:
+		print ('No weights!')
 	process(sys.argv[1])

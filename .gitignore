@@ -21,6 +21,12 @@ README.txt
 .AppleDouble
 .LSOverride
 
+# Text Data
+
+*.txt
+*.csv
+
+
 # Thumbnails
 ._*
 
